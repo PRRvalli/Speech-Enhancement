@@ -1,0 +1,50 @@
+import numpy as np
+from scipy.io import wavfile
+from matplotlib import pyplot as plt
+from os import listdir
+from os.path import isdir, join
+
+noise_level=raw_input('[0dB,5dB,10dB,15dB]')
+noise=raw_input(['restaurant', 'station', 'car', 'exhibition', 'train', 'babble', 'airport', 'street'])
+
+
+
+file=open(noise_level+'/'+noise+'/'+'speaker_list.txt','rb')
+speaker=file.readlines()
+file.close()
+
+#file=listdir(noise_level+'dB/'+noise+'/')
+a=[0,1,5,6,10,11,15,16,20,21,25,26]
+test_file=[speaker[x] for x in a]
+train_file=[speaker[x] for x in xrange(30) if x not in a]
+test=np.array([])
+train=np.array([])
+
+
+test_size=np.zeros((len(test_file),))	
+count=0
+for x in test_file:
+        temp=wavfile.read(noise_level+'/'+noise+'/'+x[0:-1])
+        test_size[count]=len(temp[1])
+        count+=1
+        #print len(temp[1])
+        test=np.hstack((test,(temp[1]*1.0)/np.max(temp[1])))
+
+print len(test)
+print np.sum(test_size)
+
+	
+train_size=np.zeros((len(train_file),))	
+count=0
+for x in train_file:
+        temp=wavfile.read(noise_level+'/'+noise+'/'+x[0:-1])
+        train_size[count]=len(temp[1])
+        count+=1
+        #print len(temp[1])
+        train=np.hstack((train,(temp[1]*1.0)/np.max(temp[1])))
+print len(train)
+print np.sum(train_size)
+
+print test.shape()
+print train.shape()
+
